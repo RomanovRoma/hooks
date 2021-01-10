@@ -18,17 +18,23 @@ const App = () => {
   }
 };
 
-const PlanetInfo = ({id}) => {
-
-  const [name, setName] = useState(null)
+const usePlanetInfo = (id) => {
+  const [name, setName] = useState(null);
 
   useEffect(() => {
-    let cancelled = false
+    let cancelled = false;
     fetch(`https://jsonplaceholder.typicode.com/users/${id}`)
-      .then(res => res.json())
-      .then(data => !cancelled && setName(data.name));
-    return () => cancelled = true
-  }, [id])
+      .then((res) => res.json())
+      .then((data) => !cancelled && setName(data.name));
+    return () => (cancelled = true);
+  }, [id]);
+
+  return name
+}
+
+const PlanetInfo = ({id}) => {
+
+  const name = usePlanetInfo(id)
 
   return (
     <div>{id} - {name}</div>
