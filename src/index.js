@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from "react";
 import ReactDOM from "react-dom";
-import { isElement } from "react-dom/test-utils";
 
 const App = () => {
-  const [value, setValue] = useState(0);
+  const [value, setValue] = useState(1);
   const [visible, setVisible] = useState(true);
 
   if (visible) {
@@ -11,8 +10,7 @@ const App = () => {
       <div>
         <button onClick={() => setValue((v) => v + 1)}>+</button>
         <button onClick={() => setVisible(false)}>hide</button>
-        <HookCounter value={value} />
-        <Notification />
+        <PlanetInfo id={value} />
       </div>
     );
   } else {
@@ -20,34 +18,21 @@ const App = () => {
   }
 };
 
-const HookCounter = ({ value }) => {
+const PlanetInfo = ({id}) => {
+
+  const [name, setName] = useState(null)
 
   useEffect(() => {
-    console.log('mount')
-    return () => console.log('unmount')
-  }, [])
-
-  useEffect(() => console.log('update'))
-
-  return <p> {value} </p>;
-};
-
-const Notification = () => {
-
-  const [visible, setVisible] = useState(true)
-  useEffect(() => {
-    const timeout = setTimeout(
-      () => setVisible(false), 2500)
-    return () => clearTimeout(timeout)
-  }, [])
+    let cancelled = false
+    fetch(`https://jsonplaceholder.typicode.com/users/${id}`)
+      .then(res => res.json())
+      .then(data => !cancelled && setName(data.name));
+    return () => cancelled = true
+  }, [id])
 
   return (
-    <div>
-      { visible && <p>Hello useEffect</p>}
-    </div>
+    <div>{id} - {name}</div>
   )
 }
-
-
 
 ReactDOM.render(<App />, document.getElementById("root"));
